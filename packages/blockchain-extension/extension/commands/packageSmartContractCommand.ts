@@ -100,6 +100,7 @@ export async function packageSmartContract(workspace?: vscode.WorkspaceFolder, o
         cancellable: false
     }, async (progress: vscode.Progress<{ message: string }>) => {
         progress.report({ message: `Packaging Smart Contract` });
+        let originalGOPATH: string = '';
         try {
 
             // Determine the filename of the new package.
@@ -118,6 +119,7 @@ export async function packageSmartContract(workspace?: vscode.WorkspaceFolder, o
             // Determine the path argument.
             let contractPath: string = workspace.uri.fsPath; // Workspace path
             if (language === 'golang') {
+<<<<<<< HEAD
                 const isModule: boolean = await fs.pathExists(path.join(contractPath, 'go.mod'));
 
                 if (!isModule) {
@@ -144,6 +146,43 @@ export async function packageSmartContract(workspace?: vscode.WorkspaceFolder, o
                     }
                 } else {
                     await CommandUtil.sendCommandWithOutput('go', ['mod', 'vendor'], contractPath);
+=======
+                if (!process.env.GOPATH) {
+                    // The path is relative to $GOPATH/src for Go smart contracts.
+                    const indexSrc: number = contractPath.indexOf(path.sep + 'src' + path.sep);
+                    if (indexSrc === -1) {
+                        // Project path is not under GOPATH.
+                        throw new Error('The environment variable GOPATH has not been set, and the extension was not able to automatically detect the correct value. You cannot package a Go smart contract without setting the environment variable GOPATH.');
+                    } else {
+                        const srcPath: string = contractPath.substring(0, indexSrc + 4);
+                        contractPath = path.relative(srcPath, contractPath);
+                        process.env.GOPATH = path.join(srcPath, '..');
+                    }
+                } else {
+                    // The path is relative to $GOPATH/src for Go smart contracts.
+                    const indexSrc: number = contractPath.indexOf(path.sep + 'src' + path.sep);
+                    let pathsMatch: boolean = false;
+                    if (indexSrc !== -1) {
+                        const srcPath: string = contractPath.substring(0, indexSrc + 4);
+                        const goPaths: string[] = process.env.GOPATH.split(path.delimiter);
+                        if (goPaths.length > 1) {
+                            originalGOPATH = process.env.GOPATH;
+                        }
+                        goPaths.forEach((value: string) => {
+                            if (value.charAt(value.length - 1) === path.sep) {
+                                value = value.substr(0, value.length - 1);
+                            }
+                            if (value === srcPath.substr(0, srcPath.length - 4)) {
+                                process.env.GOPATH = value;
+                                pathsMatch = true;
+                            }
+                        });
+                        contractPath = path.relative(srcPath, contractPath);
+                    }
+                    if (!pathsMatch || !contractPath || contractPath.startsWith('..') || path.isAbsolute(contractPath)) {
+                        throw new Error('The Go smart contract is not a subdirectory of the path specified by the environment variable GOPATH. Please correct the environment variable GOPATH.');
+                    }
+>>>>>>> c89ebcf8... GOPATH issue updated (#2614)
                 }
             }
 
@@ -173,6 +212,7 @@ export async function packageSmartContract(workspace?: vscode.WorkspaceFolder, o
             packageEntry.name = properties.workspacePackageName;
             packageEntry.version = properties.workspacePackageVersion;
             packageEntry.path = pkgFile;
+<<<<<<< HEAD
 
             const stat: fs.Stats = await fs.lstat(pkgFile);
 
@@ -185,9 +225,17 @@ export async function packageSmartContract(workspace?: vscode.WorkspaceFolder, o
                 await DeployView.updatePackages();
             }
 
+=======
+            if (originalGOPATH) {
+                process.env.GOPATH = originalGOPATH;
+            }
+>>>>>>> c89ebcf8... GOPATH issue updated (#2614)
             return packageEntry;
         } catch (err) {
             outputAdapter.log(LogType.ERROR, err.message, err.toString());
+            if (originalGOPATH) {
+                process.env.GOPATH = originalGOPATH;
+            }
             return;
         }
     });
