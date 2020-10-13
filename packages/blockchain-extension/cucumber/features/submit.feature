@@ -8,10 +8,10 @@ Feature: Submit transaction
         And the 'Org1' wallet
         And the 'Local Fabric Admin' identity
         And I'm connected to the '1 Org Local Fabric - Org1' gateway
+        And a <language> smart contract for <assetType> assets with the name <name> and version <version>
         And the contract has been created
         And the contract has been packaged
-        And the package has been installed
-        And the contract has been instantiated with the transaction '' and args '', not using private data on channel 'mychannel'
+        And the contract has been deployed on channel 'mychannel'
         When I submit the transaction 'createConga' on the channel 'mychannel' with args '["Conga_001", "Big Conga"]'
         Then the logger should have been called with 'SUCCESS', 'Successfully submitted transaction' and 'No value returned from createConga'
         Examples:
@@ -19,10 +19,10 @@ Feature: Submit transaction
         | JavaScript | Conga     | JavaScriptContract | 0.0.1   |
         | TypeScript | Conga     | TypeScriptContract | 0.0.1   |
         | Java       | Conga     | JavaContract       | 0.0.1   |
-        | Go         | null      | GoContract         | 0.0.1   |
+        | Go         | Conga     | GoContract         | 0.0.1   |
 
 
-     Scenario Outline: Submit a transaction for a smart contract using generated transaction data
+    Scenario Outline: Submit a transaction for a smart contract using generated transaction data
         Given a <language> smart contract for <assetType> assets with the name <name> and version <version>
         And the 1 Org Local Fabric environment is running
         And the '1 Org Local Fabric' environment is connected
@@ -40,6 +40,7 @@ Feature: Submit transaction
         | language   | assetType | name               | version |
         | TypeScript | Conga     | TypeScriptContract | 0.0.1   |
 
+<<<<<<< HEAD
      @ansibleFabric
      Scenario Outline: Submit a verify transaction for a private data smart contract
         Given a private <language> smart contract for <assetType> assets with the name <name> and version <version> and mspid <mspid>
@@ -60,6 +61,29 @@ Feature: Submit transaction
         | JavaScript | PrivateConga     | PrivateJavaScriptContract | Org1MSP    | 0.0.1   |
         | TypeScript | PrivateConga     | PrivateTypeScriptContract | Org1MSP    | 0.0.1   |
         | Java       | PrivateConga     | PrivateJavaContract       | Org1MSP    | 0.0.1   |
+=======
+  @ansibleFabric
+  Scenario Outline: Submit a verify transaction for a private data smart contract
+    Given a private <language> smart contract for <assetType> assets with the name <name> and version <version> and mspid <mspid>
+    Given an environment 'myAnsibleFabric' exists
+    And the 'myAnsibleFabric' environment is connected
+    And the 'admin' identity
+    And I'm connected to the 'myAnsibleFabric - Org1 gateway' gateway
+    And the private contract has been created
+    And the contract has been packaged
+    And the contract has been packaged
+    When I deploy the contract on channel 'channel1' with sequence '1' with private data
+    When I submit the transaction 'createPrivateConga' on the channel 'channel1' with args '["001"]' and with the transient data '{"privateValue":"125"}'
+    Then the logger should have been called with 'SUCCESS', 'Successfully submitted transaction' and 'No value returned from createPrivateConga'
+    When I submit the transaction 'verifyPrivateConga' on the channel 'channel1' with args '["001", "{\"privateValue\":\"125\"}"]'
+    Then the logger should have been called with 'SUCCESS', 'Successfully submitted transaction' and 'Returned value from verifyPrivateConga: true'
+    Examples:
+      | language   | assetType    | name                      | mspid   | version |
+      | JavaScript | PrivateConga | PrivateJavaScriptContract | Org1MSP | 0.0.1   |
+      | TypeScript | PrivateConga | PrivateTypeScriptContract | Org1MSP | 0.0.1   |
+      | Java       | PrivateConga | PrivateJavaContract       | Org1MSP | 0.0.1   |
+      | Go         | PrivateConga | PrivateGoContract         | Org1MSP | 0.0.1   |
+>>>>>>> a69b8bbd... Make go module projects work on v2
 
 
     @otherFabric

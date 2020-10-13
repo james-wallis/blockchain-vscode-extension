@@ -10,10 +10,10 @@ Feature: Smart Contracts packages
         And the tree item should have a tooltip equal to '<packagedName>\nFile size: <size> KB'
         Examples:
         | language   | assetType | name               | packagedName             | size     | version |
-        | JavaScript | Conga     | JavaScriptContract | JavaScriptContract@0.0.1 | 52       | 0.0.1   |
-        | TypeScript | Conga     | TypeScriptContract | TypeScriptContract@0.0.1 | 49       | 0.0.1   |
-        | Java       | Conga     | JavaContract       | JavaContract@0.0.1       | 56       | 0.0.1   |
-        | Go         | null      | GoContract         | GoContract@0.0.1         | 1        | 0.0.1   |
+        | JavaScript | Conga     | JavaScriptContract | JavaScriptContract@0.0.1 | 43       | 0.0.1   |
+        | TypeScript | Conga     | TypeScriptContract | TypeScriptContract@0.0.1 | 39       | 0.0.1   |
+        | Java       | Conga     | JavaContract       | JavaContract@0.0.1       | 55       | 0.0.1   |
+        | Go         | Conga     | GoContract         | GoContract@0.0.1         | 2204     | 0.0.1   |
 
     Scenario Outline: Inspect smart contract contents
         Given a <language> smart contract for <assetType> assets with the name <name> and version <version>

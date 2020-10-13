@@ -22,6 +22,7 @@ import { VSCodeBlockchainOutputAdapter } from '../logging/VSCodeBlockchainOutput
 import { LogType, FileSystemUtil } from 'ibm-blockchain-platform-common';
 import { ExtensionCommands } from '../../ExtensionCommands';
 import { SettingConfigurations } from '../../configurations';
+import { CommandUtil } from '../util/CommandUtil';
 
 /**
  * Main function which calls the methods and refreshes the blockchain explorer box each time that it runs successfully.
@@ -116,41 +117,32 @@ export async function packageSmartContract(workspace?: vscode.WorkspaceFolder, o
             // Determine the path argument.
             let contractPath: string = workspace.uri.fsPath; // Workspace path
             if (language === 'golang') {
-                if (!process.env.GOPATH) {
-                    // The path is relative to $GOPATH/src for Go smart contracts.
-                    const indexSrc: number = contractPath.indexOf(path.sep + 'src' + path.sep);
-                    if (indexSrc === -1) {
-                        // Project path is not under GOPATH.
-                        throw new Error('The environment variable GOPATH has not been set, and the extension was not able to automatically detect the correct value. You cannot package a Go smart contract without setting the environment variable GOPATH.');
+                const isModule: boolean = await fs.pathExists(path.join(contractPath, 'go.mod'));
+
+                if (!isModule) {
+                    if (!process.env.GOPATH) {
+                        // The path is relative to $GOPATH/src for Go smart contracts.
+                        const srcPath: string = path.join(contractPath, '..', '..', 'src');
+                        contractPath = path.basename(contractPath);
+                        const exists: boolean = await fs.pathExists(srcPath);
+
+                        if (!exists) {
+                            // Project path is not under GOPATH.
+                            throw new Error('The environment variable GOPATH has not been set, and the extension was not able to automatically detect the correct value. You cannot package a Go smart contract without setting the environment variable GOPATH.');
+                        } else {
+                            process.env.GOPATH = path.join(srcPath, '..');
+                        }
                     } else {
-                        const srcPath: string = contractPath.substring(0, indexSrc + 4);
+                        // The path is relative to $GOPATH/src for Go smart contracts.
+                        const srcPath: string = path.join(process.env.GOPATH, 'src');
                         contractPath = path.relative(srcPath, contractPath);
-                        process.env.GOPATH = path.join(srcPath, '..');
+                        if (!contractPath || contractPath.startsWith('..') || path.isAbsolute(contractPath)) {
+                            // Project path is not under GOPATH.
+                            throw new Error('The Go smart contract is not a subdirectory of the path specified by the environment variable GOPATH. Please correct the environment variable GOPATH.');
+                        }
                     }
                 } else {
-                    // The path is relative to $GOPATH/src for Go smart contracts.
-                    const indexSrc: number = contractPath.indexOf(path.sep + 'src' + path.sep);
-                    let pathsMatch: boolean = false;
-                    if (indexSrc !== -1) {
-                        const srcPath: string = contractPath.substring(0, indexSrc + 4);
-                        const goPaths: string[] = process.env.GOPATH.split(path.delimiter);
-                        if (goPaths.length > 1) {
-                            originalGOPATH = process.env.GOPATH;
-                        }
-                        goPaths.forEach((value: string) => {
-                            if (value.charAt(value.length - 1) === path.sep) {
-                                value = value.substr(0, value.length - 1);
-                            }
-                            if (value === srcPath.substr(0, srcPath.length - 4)) {
-                                process.env.GOPATH = value;
-                                pathsMatch = true;
-                            }
-                        });
-                        contractPath = path.relative(srcPath, contractPath);
-                    }
-                    if (!pathsMatch || !contractPath || contractPath.startsWith('..') || path.isAbsolute(contractPath)) {
-                        throw new Error('The Go smart contract is not a subdirectory of the path specified by the environment variable GOPATH. Please correct the environment variable GOPATH.');
-                    }
+                    await CommandUtil.sendCommandWithOutput('go', ['mod', 'vendor'], contractPath);
                 }
             }
 

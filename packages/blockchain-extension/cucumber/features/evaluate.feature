@@ -7,10 +7,10 @@ Feature: Evaluate transaction
         And the 'Local Fabric Admin' identity
         And the '1 Org Local Fabric' environment is connected
         And I'm connected to the '1 Org Local Fabric - Org1' gateway
+        And a <language> smart contract for <assetType> assets with the name <name> and version <version>
         And the contract has been created
         And the contract has been packaged
-        And the package has been installed
-        And the contract has been instantiated with the transaction '' and args '', not using private data on channel 'mychannel'
+        And the contract has been deployed on channel 'mychannel'
         And the transaction 'createConga' has been submitted on the channel 'mychannel' with args '["Conga_001", "Big Conga"]'
         When I evaluate the transaction 'readConga' on the channel 'mychannel' with args '["Conga_001"]'
         Then the logger should have been called with 'SUCCESS', 'Successfully evaluated transaction' and 'Returned value from readConga: {"value":"Big Conga"}'
@@ -19,7 +19,7 @@ Feature: Evaluate transaction
         | JavaScript | Conga     | JavaScriptContract | 0.0.1   |
         | TypeScript | Conga     | TypeScriptContract | 0.0.1   |
         | Java       | Conga     | JavaContract       | 0.0.1   |
-        | Go         | null      | GoContract         | 0.0.1   |
+        | Go         | Conga     | GoContract         | 0.0.1   |
 
     Scenario Outline: Evaluate a transaction for a smart contract using generated transaction data
         Given a <language> smart contract for <assetType> assets with the name <name> and version <version>
