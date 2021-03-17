@@ -272,7 +272,7 @@ describe('DeployView', () => {
             await deployView.openView(false);
             await Promise.all(onDidDisposePromises);
 
-            deployStub.should.have.been.calledOnceWithExactly('mychannel', FabricRuntimeUtil.LOCAL_FABRIC, packageEntryOne, 'packageOneName', 'packageOneVersion', undefined, undefined, [], ['Org2Peer1', 'Org2Peer2']);
+            deployStub.should.have.been.calledOnceWithExactly('mychannel', FabricRuntimeUtil.LOCAL_FABRIC, packageEntryOne, 'packageOneName', 'packageOneVersion', undefined, undefined, '', ['Org2Peer1', 'Org2Peer2']);
         });
 
     });
@@ -788,7 +788,7 @@ describe('DeployView', () => {
             await deployView.openView(false);
             await Promise.all(onDidDisposePromises);
 
-            getOrgApprovalsStub.should.have.been.calledOnceWithExactly(FabricRuntimeUtil.LOCAL_FABRIC, 'mychannel', 'packageOneName', 'packageOneVersion', undefined, []);
+            getOrgApprovalsStub.should.have.been.calledOnceWithExactly(FabricRuntimeUtil.LOCAL_FABRIC, 'mychannel', 'packageOneName', 'packageOneVersion', undefined, '');
         });
 
     });
@@ -1173,7 +1173,7 @@ describe('DeployView', () => {
             const deployV1Stub: sinon.SinonStub = mySandBox.stub(deployView, 'deployV1').resolves();
             await deployView.openView(false);
             await Promise.all(onDidDisposePromises);
-            deployV1Stub.should.have.been.calledWith('instantiate', 'mychannel', FabricRuntimeUtil.LOCAL_FABRIC, packageEntryOne, { name: '', args: '' }, undefined, []);
+            deployV1Stub.should.have.been.calledWith('instantiate', 'mychannel', FabricRuntimeUtil.LOCAL_FABRIC, packageEntryOne, { name: '', args: '' }, undefined, '');
         });
 
         it('should handle instantiate message', async () => {
@@ -1212,7 +1212,7 @@ describe('DeployView', () => {
             const deployV1Stub: sinon.SinonStub = mySandBox.stub(deployView, 'deployV1').resolves();
             await deployView.openView(false);
             await Promise.all(onDidDisposePromises);
-            deployV1Stub.should.have.been.calledWith('upgrade', 'mychannel', FabricRuntimeUtil.LOCAL_FABRIC, packageEntryOne, { name: '', args: '' }, undefined, []);
+            deployV1Stub.should.have.been.calledWith('upgrade', 'mychannel', FabricRuntimeUtil.LOCAL_FABRIC, packageEntryOne, { name: '', args: '' }, undefined, '');
         });
     });
 
