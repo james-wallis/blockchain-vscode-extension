@@ -278,7 +278,7 @@ describe('DeployPage component', () => {
                         definitionName: packageTwo.name,
                         definitionVersion: packageTwo.version,
                         commitSmartContract: undefined,
-                        collectionConfig: [],
+                        collectionConfig: '',
                         endorsementPolicy: undefined,
                         selectedPeers: ['Org1Peer1', 'Org2Peer1']
                     }
@@ -298,7 +298,7 @@ describe('DeployPage component', () => {
                         "memberOnlyRead": true
                     }
                 ];
-                mySandBox.stub(Utils, 'readJsonFileAsync').returns(collection);
+                mySandBox.stub(Utils, 'readFileAsync').resolves(JSON.stringify(collection));
 
                 const component: ReactWrapper<DeployPage> = mount(<DeployPage deployData={deployData} />);
                 const instance: DeployPage = component.instance() as DeployPage;
@@ -318,7 +318,7 @@ describe('DeployPage component', () => {
                     selectedPeers: ['Org1Peer1', 'Org2Peer1']
                 });
 
-                await await instance.handleDeploy();
+                await instance.handleDeploy();
 
                 postToVscodeStub.should.have.been.calledOnceWithExactly({
                     command: 'deploy',
@@ -329,7 +329,7 @@ describe('DeployPage component', () => {
                         definitionName: packageTwo.name,
                         definitionVersion: packageTwo.version,
                         commitSmartContract: undefined,
-                        collectionConfig: collection,
+                        collectionConfig: JSON.stringify(collection),
                         endorsementPolicy: undefined,
                         selectedPeers: ['Org1Peer1', 'Org2Peer1']
                     }
@@ -365,7 +365,7 @@ describe('DeployPage component', () => {
                         definitionName: packageTwo.name,
                         definitionVersion: packageTwo.version,
                         commitSmartContract: undefined,
-                        collectionConfig: [],
+                        collectionConfig: '',
                         endorsementPolicy: 'OR("Org1MSP.member")',
                         selectedPeers: ['Org1Peer1', 'Org2Peer1']
                     }
@@ -403,7 +403,7 @@ describe('DeployPage component', () => {
                         selectedPackage: packageTwo,
                         instantiateFunctionName: '',
                         instantiateFunctionArgs: '',
-                        collectionConfig: [],
+                        collectionConfig: '',
                         endorsementPolicy: undefined,
                     }
                 });
@@ -422,7 +422,7 @@ describe('DeployPage component', () => {
                         "memberOnlyRead": true
                     }
                 ];
-                mySandBox.stub(Utils, 'readJsonFileAsync').resolves(collection);
+                mySandBox.stub(Utils, 'readFileAsync').resolves(JSON.stringify(collection));
 
                 const component: ReactWrapper<DeployPage> = mount(<DeployPage deployData={deployData} />);
                 const instance: DeployPage = component.instance() as DeployPage;
@@ -449,7 +449,7 @@ describe('DeployPage component', () => {
                         selectedPackage: packageTwo,
                         instantiateFunctionName: '',
                         instantiateFunctionArgs: '',
-                        collectionConfig: collection,
+                        collectionConfig: JSON.stringify(collection),
                         endorsementPolicy: undefined,
                     }
                 });
@@ -480,7 +480,7 @@ describe('DeployPage component', () => {
                         selectedPackage: packageTwo,
                         instantiateFunctionName: '',
                         instantiateFunctionArgs: '',
-                        collectionConfig: [],
+                        collectionConfig: '',
                         endorsementPolicy: 'OR("Org1MSP.member")',
                     }
                 });
@@ -513,7 +513,7 @@ describe('DeployPage component', () => {
                         selectedPackage: packageTwo,
                         instantiateFunctionName: '',
                         instantiateFunctionArgs: '',
-                        collectionConfig: [],
+                        collectionConfig: '',
                         endorsementPolicy: undefined,
                     }
                 });
@@ -547,7 +547,7 @@ describe('DeployPage component', () => {
                     channelName: 'myChannel',
                     definitionName: packageTwo.name,
                     definitionVersion: packageTwo.version,
-                    collectionConfig: [],
+                    collectionConfig: '',
                     endorsementPolicy: 'OR("Org1MSP.member","Org2MSP.member")',
                 }
             });
@@ -566,7 +566,7 @@ describe('DeployPage component', () => {
                     "memberOnlyRead": true
                 }
             ];
-            mySandBox.stub(Utils, 'readJsonFileAsync').resolves(collection);
+            mySandBox.stub(Utils, 'readFileAsync').resolves(JSON.stringify(collection));
 
             const component: ReactWrapper<DeployPage> = mount(<DeployPage deployData={deployData} />);
             const instance: DeployPage = component.instance() as DeployPage;
@@ -592,7 +592,7 @@ describe('DeployPage component', () => {
                     channelName: 'myChannel',
                     definitionName: packageTwo.name,
                     definitionVersion: packageTwo.version,
-                    collectionConfig: collection,
+                    collectionConfig: JSON.stringify(collection),
                     endorsementPolicy: 'OR("Org1MSP.member","Org2MSP.member")',
                 }
             });

@@ -38,16 +38,11 @@ class Utils {
         }
     }
 
-    static readJsonFileAsync(blob: Blob): Promise<JSON> {
+    static readFileAsync(blob: Blob): Promise<string> {
         return new Promise((resolve, reject) => {
             const reader: FileReader = new FileReader();
             reader.onload = () => {
-                try {
-                    const json: JSON = JSON.parse(reader.result as string);
-                    resolve(json);
-                } catch (err) {
-                    reject(err);
-                }
+                resolve(reader.result as string);
              };
 
             reader.onerror = reject;

@@ -185,7 +185,7 @@ class DeployPage extends Component<IProps, DeployState> {
     }
 
     async handleGetOrgApprovals(): Promise<void> {
-        const collectionConfig: JSON | [] = this.state.currentCollectionFile ? await Utils.readJsonFileAsync(this.state.currentCollectionFile) : [];
+        const collectionConfig: string = this.state.currentCollectionFile ? await Utils.readFileAsync(this.state.currentCollectionFile) : '';
 
         Utils.postToVSCode({
             command: 'getOrgApprovals',
@@ -201,7 +201,7 @@ class DeployPage extends Component<IProps, DeployState> {
     }
 
     async handleDeploy(): Promise<void> {
-        const collectionConfig: JSON | [] = this.state.currentCollectionFile ? await Utils.readJsonFileAsync(this.state.currentCollectionFile) : [];
+        const collectionConfig: string = this.state.currentCollectionFile ? await Utils.readFileAsync(this.state.currentCollectionFile) : '';
 
         if (this.state.hasV1Capabilities) {
             const command: string = (this.props.deployData.committedDefinitions.find((entry: string) => entry.includes(`${this.state.definitionName}@`))) ? 'upgrade' : 'instantiate';

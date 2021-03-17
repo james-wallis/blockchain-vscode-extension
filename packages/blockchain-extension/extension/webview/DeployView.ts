@@ -80,10 +80,10 @@ export class DeployView extends ReactView {
                 const definitionVersion: string = message.data.definitionVersion;
                 const commitSmartContract: boolean = message.data.commitSmartContract;
                 const endorsementPolicy: string = message.data.endorsementPolicy;
-                const collectionConfig: FabricCollectionDefinition[] = message.data.collectionConfig;
+                const collectionConfigString: string = message.data.collectionConfig;
                 const selectedPeers: string[] = message.data.selectedPeers;
 
-                await this.deploy(channelName, environmentName, selectedPackage, definitionName, definitionVersion, commitSmartContract, endorsementPolicy, collectionConfig, selectedPeers);
+                await this.deploy(channelName, environmentName, selectedPackage, definitionName, definitionVersion, commitSmartContract, endorsementPolicy, collectionConfigString, selectedPeers);
 
             } else if (message.command === 'instantiate' || message.command === 'upgrade') {
                 const channelName: string = message.data.channelName;
@@ -94,9 +94,9 @@ export class DeployView extends ReactView {
                     args: message.data.instantiateFunctionArgs,
                 };
                 const endorsementPolicy: string = message.data.endorsementPolicy;
-                const collectionConfig: FabricCollectionDefinition[] = message.data.collectionConfig;
+                const collectionConfigString: string = message.data.collectionConfig;
 
-                await this.deployV1(message.command, channelName, environmentName, selectedPackage, instantiateFunction, endorsementPolicy, collectionConfig);
+                await this.deployV1(message.command, channelName, environmentName, selectedPackage, instantiateFunction, endorsementPolicy, collectionConfigString);
 
             } else if (message.command === 'package') {
                 const workspaceName: string = message.data.workspaceName;
@@ -115,9 +115,9 @@ export class DeployView extends ReactView {
                 const definitionName: string = message.data.definitionName;
                 const definitionVersion: string = message.data.definitionVersion;
                 const endorsementPolicy: string = message.data.endorsementPolicy;
-                const collectionConfig: FabricCollectionDefinition[] = message.data.collectionConfig;
+                const collectionConfigString: string = message.data.collectionConfig;
 
-                await this.getOrgApprovals(environmentName, channelName, definitionName, definitionVersion, endorsementPolicy, collectionConfig);
+                await this.getOrgApprovals(environmentName, channelName, definitionName, definitionVersion, endorsementPolicy, collectionConfigString);
             } else if (message.command === 'getPackageLanguage') {
                 const chosenWorkspaceData: { language: string, name: string, version: string } = {
                     language: '',
@@ -158,7 +158,7 @@ export class DeployView extends ReactView {
         });
     }
 
-    async deploy(channelName: string, environmentName: string, selectedPackage: PackageRegistryEntry, definitionName: string, definitionVersion: string, commitSmartContract: boolean, endorsementPolicy: string, _collectionConfig: FabricCollectionDefinition[], selectedPeers: string[]): Promise<void> {
+    async deploy(channelName: string, environmentName: string, selectedPackage: PackageRegistryEntry, definitionName: string, definitionVersion: string, commitSmartContract: boolean, endorsementPolicy: string, collectionConfigString: string, selectedPeers: string[]): Promise<void> {
         const outputAdapter: VSCodeBlockchainOutputAdapter = VSCodeBlockchainOutputAdapter.instance();
 
         try {
@@ -249,14 +249,14 @@ export class DeployView extends ReactView {
                 }
             }
 
-            let collectionConfig: FabricCollectionDefinition[];
-            if (_collectionConfig && _collectionConfig.length > 0) {
-                collectionConfig = _collectionConfig;
-            }
-
-            if (collectionConfig || endorsementPolicy) {
+            if (collectionConfigString || endorsementPolicy) {
                 // Always increment sequence
                 sequenceNumber = committedContract ? committedContract.sequence + 1 : 1;
+            }
+
+            let collectionFile: FabricCollectionDefinition[];
+            if (collectionConfigString && collectionConfigString !== '') {
+                collectionFile = JSON.parse(collectionConfigString);
             }
 
             if (endorsementPolicy) {
@@ -268,14 +268,14 @@ export class DeployView extends ReactView {
                 commitSmartContract = true; // Commit by default
             }
 
-            await vscode.commands.executeCommand(ExtensionCommands.DEPLOY_SMART_CONTRACT, commitSmartContract, environmentEntry, ordererNames[0], channelName, installApproveMap, selectedPackage, new FabricSmartContractDefinition(definitionName, definitionVersion, sequenceNumber, undefined, endorsementPolicy, collectionConfig), commitMap);
+            await vscode.commands.executeCommand(ExtensionCommands.DEPLOY_SMART_CONTRACT, commitSmartContract, environmentEntry, ordererNames[0], channelName, installApproveMap, selectedPackage, new FabricSmartContractDefinition(definitionName, definitionVersion, sequenceNumber, undefined, endorsementPolicy, collectionFile), commitMap);
         } catch (error) {
             outputAdapter.log(LogType.ERROR, error.message, error.toString());
         }
 
     }
 
-    async deployV1(command: string, channelName: string, environmentName: string, selectedPackage: PackageRegistryEntry, instantiateFunction: IInstantiateFunction, endorsementPolicy: any, _collectionConfig: FabricCollectionDefinition[]): Promise<void> {
+    async deployV1(command: string, channelName: string, environmentName: string, selectedPackage: PackageRegistryEntry, instantiateFunction: IInstantiateFunction, endorsementPolicy: any, collectionConfigString: string): Promise<void> {
         const outputAdapter: VSCodeBlockchainOutputAdapter = VSCodeBlockchainOutputAdapter.instance();
 
         try {
@@ -323,13 +323,8 @@ export class DeployView extends ReactView {
                 endorsementPolicy = endorsementPolicy.replace(/"/g, "\'");
             }
 
-            let collectionConfig: FabricCollectionDefinition[];
-            if (_collectionConfig && _collectionConfig.length > 0) {
-                collectionConfig = _collectionConfig;
-            }
-
             const extensionCommand: string = (command === 'instantiate') ? ExtensionCommands.INSTANTIATE_SMART_CONTRACT : ExtensionCommands.UPGRADE_SMART_CONTRACT;
-            await vscode.commands.executeCommand(extensionCommand, channelName, peerNames, selectedPackage, instantiateFunction.name, parsedArgs, endorsementPolicy, collectionConfig);
+            await vscode.commands.executeCommand(extensionCommand, channelName, peerNames, selectedPackage, instantiateFunction.name, parsedArgs, endorsementPolicy, collectionConfigString);
         } catch (error) {
             outputAdapter.log(LogType.ERROR, error.message, error.toString());
         }
@@ -346,7 +341,7 @@ export class DeployView extends ReactView {
         return packageEntry;
     }
 
-    async getOrgApprovals(environmentName: string, channelName: string, definitionName: string, definitionVersion: string, endorsementPolicy: string, collectionConfig: FabricCollectionDefinition[]): Promise<void> {
+    async getOrgApprovals(environmentName: string, channelName: string, definitionName: string, definitionVersion: string, endorsementPolicy: string, collectionConfigString: string): Promise<void> {
         const outputAdapter: VSCodeBlockchainOutputAdapter = VSCodeBlockchainOutputAdapter.instance();
 
         try {
@@ -395,8 +390,9 @@ export class DeployView extends ReactView {
 
             const definition: FabricSmartContractDefinition = new FabricSmartContractDefinition(definitionName, definitionVersion, sequenceNumber);
 
-            if (collectionConfig && collectionConfig.length > 0) {
-                definition.collectionConfig = collectionConfig;
+            if (collectionConfigString && collectionConfigString !== '') {
+                const collectionFile: FabricCollectionDefinition[] = JSON.parse(collectionConfigString);
+                definition.collectionConfig = collectionFile;
             }
 
             if (endorsementPolicy) {

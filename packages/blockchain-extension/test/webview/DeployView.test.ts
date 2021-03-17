@@ -28,7 +28,7 @@ import {
     FabricEnvironmentRegistry,
     LogType,
     FabricSmartContractDefinition,
-    FabricCollectionDefinition,
+    FabricCollectionDefinition
 } from 'ibm-blockchain-platform-common';
 import { PackageRegistryEntry } from '../../extension/registries/PackageRegistryEntry';
 import { FabricEnvironmentManager } from '../../extension/fabric/environments/FabricEnvironmentManager';
@@ -248,7 +248,7 @@ describe('DeployView', () => {
                                     definitionVersion: 'packageOneVersion',
                                     commitSmartContract: undefined,
                                     endorsmentPolicy: undefined,
-                                    collectionConfig: [],
+                                    collectionConfig: '',
                                     selectedPeers: ['Org2Peer1', 'Org2Peer2']
                                 }
                             });
@@ -546,7 +546,7 @@ describe('DeployView', () => {
                 }
             ];
 
-            await deployView.deploy('mychannel', FabricRuntimeUtil.LOCAL_FABRIC, packageEntryOne, 'defName', '0.0.2', undefined, undefined, collection, ['Org2Peer1', 'Org2Peer2']);
+            await deployView.deploy('mychannel', FabricRuntimeUtil.LOCAL_FABRIC, packageEntryOne, 'defName', '0.0.2', undefined, undefined, JSON.stringify(collection), ['Org2Peer1', 'Org2Peer2']);
 
             executeCommandStub.should.not.have.been.calledWith(ExtensionCommands.DISCONNECT_ENVIRONMENT);
             executeCommandStub.should.not.have.been.calledWith(ExtensionCommands.CONNECT_TO_ENVIRONMENT, localEntry);
@@ -582,7 +582,7 @@ describe('DeployView', () => {
                 }
             ];
 
-            await deployView.deploy('mychannel', FabricRuntimeUtil.LOCAL_FABRIC, packageEntryOne, 'defName', '0.0.1', undefined, undefined, collection, ['Org2Peer1', 'Org2Peer2']);
+            await deployView.deploy('mychannel', FabricRuntimeUtil.LOCAL_FABRIC, packageEntryOne, 'defName', '0.0.1', undefined, undefined, JSON.stringify(collection), ['Org2Peer1', 'Org2Peer2']);
 
             executeCommandStub.should.not.have.been.calledWith(ExtensionCommands.DISCONNECT_ENVIRONMENT);
             executeCommandStub.should.not.have.been.calledWith(ExtensionCommands.CONNECT_TO_ENVIRONMENT, localEntry);
@@ -762,7 +762,7 @@ describe('DeployView', () => {
                                     definitionName: 'packageOneName',
                                     definitionVersion: 'packageOneVersion',
                                     endorsmentPolicy: undefined,
-                                    collectionConfig: [],
+                                    collectionConfig: '',
                                 }
                             });
                             resolve();
@@ -1112,7 +1112,7 @@ describe('DeployView', () => {
                 }
             ];
 
-            await deployView.getOrgApprovals(FabricRuntimeUtil.LOCAL_FABRIC, 'mychannel', 'defName', '0.0.1', undefined, collection);
+            await deployView.getOrgApprovals(FabricRuntimeUtil.LOCAL_FABRIC, 'mychannel', 'defName', '0.0.1', undefined, JSON.stringify(collection));
             executeCommandStub.should.not.have.been.calledWith(ExtensionCommands.DISCONNECT_ENVIRONMENT);
             executeCommandStub.should.not.have.been.calledWith(ExtensionCommands.CONNECT_TO_ENVIRONMENT, localEntry);
 
@@ -1153,7 +1153,7 @@ describe('DeployView', () => {
                                     instantiateFunctionName: '',
                                     instantiateFunctionArgs: '',
                                     endorsmentPolicy: undefined,
-                                    collectionConfig: [],
+                                    collectionConfig: '',
                                 }
                             });
                             resolve();
@@ -1192,7 +1192,7 @@ describe('DeployView', () => {
                                     instantiateFunctionName: '',
                                     instantiateFunctionArgs: '',
                                     endorsmentPolicy: undefined,
-                                    collectionConfig: [],
+                                    collectionConfig: '',
                                 }
                             });
                             resolve();

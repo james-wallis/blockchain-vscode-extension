@@ -1275,7 +1275,7 @@ describe('FabricEnvironmentConnection', () => {
         it('should instantiate the specified chaincode', async () => {
             const collectionDef: FabricCollectionDefinition[] = [new FabricCollectionDefinition('myCollection', `OR('Org1MSP)`, 4, 2)];
             const instantiateOrUpgradeSmartContractDefinitionStub: sinon.SinonStub = mySandBox.stub(LifecycleChannel.prototype, 'instantiateOrUpgradeSmartContractDefinition').resolves();
-            await connection.instantiateChaincode('myChaincode', '0.0.1', ['Org1 Peer1', 'Org2 Peer1'], 'mychannel', 'instantiate', ['arg1'], collectionDef, `OR('Org1.member')`);
+            await connection.instantiateChaincode('myChaincode', '0.0.1', ['Org1 Peer1', 'Org2 Peer1'], 'mychannel', 'instantiate', ['arg1'], JSON.stringify(collectionDef), `OR('Org1.member')`);
 
             // getNodeStub.should.have.been.calledWith('peer0.org1.example.com');
             instantiateOrUpgradeSmartContractDefinitionStub.should.have.been.calledWith(
