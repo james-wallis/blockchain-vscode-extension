@@ -1287,15 +1287,11 @@ describe('FabricEnvironmentConnection', () => {
                     sequence: -1,
                     endorsementPolicy: `OR('Org1.member')`,
                     collectionConfig: [{
-                        blockToLive: undefined,
-                        endorsementPolicy: undefined,
                         maxPeerCount: 4,
-                        memberOnlyRead: undefined,
-                        memberOnlyWrite: undefined,
                         name: 'myCollection',
                         policy: "OR('Org1MSP)",
                         requiredPeerCount: 2
-                      }]
+                    }]
                 },
                 'instantiate',
                 ['arg1'],
