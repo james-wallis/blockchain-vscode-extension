@@ -207,7 +207,7 @@ export class SmartContractHelper {
             });
         }
 
-        let collectionConfig: FabricCollectionDefinition[] = [];
+        let collectionConfig: FabricCollectionDefinition[];
         if (privateData) {
             collectionConfig = privateCollectionConfig;
         }
@@ -246,12 +246,12 @@ export class SmartContractHelper {
             return packageEntry.name === name && packageEntry.version === version;
         });
 
-        let collectionConfig: FabricCollectionDefinition[] = [];
+        let collectionConfigString: string;
         if (privateData) {
-            collectionConfig = privateCollectionConfig;
+            collectionConfigString = JSON.stringify(privateCollectionConfig);
         }
 
-        await vscode.commands.executeCommand(ExtensionCommands.INSTANTIATE_SMART_CONTRACT, channel, peerNames, wantedPackage, transaction, args, undefined, collectionConfig);
+        await vscode.commands.executeCommand(ExtensionCommands.INSTANTIATE_SMART_CONTRACT, channel, peerNames, wantedPackage, transaction, args, undefined, collectionConfigString);
     }
 
     public async upgradeSmartContract(name: string, version: string, transaction: string, args: string, privateData: boolean, channel: string): Promise<void> {
@@ -265,11 +265,11 @@ export class SmartContractHelper {
             return packageEntry.name === name && packageEntry.version === version;
         });
 
-        let collectionConfig: FabricCollectionDefinition[] = [];
+        let collectionConfigString: string;
         if (privateData) {
-            collectionConfig = privateCollectionConfig;
+            collectionConfigString = JSON.stringify(privateCollectionConfig);
         }
 
-        await vscode.commands.executeCommand(ExtensionCommands.UPGRADE_SMART_CONTRACT, channel, peerNames, wantedPackage, transaction, args, undefined, collectionConfig);
+        await vscode.commands.executeCommand(ExtensionCommands.UPGRADE_SMART_CONTRACT, channel, peerNames, wantedPackage, transaction, args, undefined, collectionConfigString);
     }
 }

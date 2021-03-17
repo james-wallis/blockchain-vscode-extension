@@ -508,7 +508,7 @@ export class FabricEnvironmentConnection implements IFabricEnvironmentConnection
         const ordererName: string = this.getAllOrdererNames()[0];
         let collectionFile: FabricCollectionDefinition[];
         if (_collectionConfigString && _collectionConfigString !== '') {
-            collectionFile = JSON.parse(_collectionConfigString);
+            collectionFile = JSON.parse(_collectionConfigString) as FabricCollectionDefinition[];
         }
 
         return channel.instantiateOrUpgradeSmartContractDefinition(

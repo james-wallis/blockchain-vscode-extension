@@ -256,7 +256,7 @@ export class DeployView extends ReactView {
 
             let collectionFile: FabricCollectionDefinition[];
             if (collectionConfigString && collectionConfigString !== '') {
-                collectionFile = JSON.parse(collectionConfigString);
+                collectionFile = JSON.parse(collectionConfigString) as FabricCollectionDefinition[];
             }
 
             if (endorsementPolicy) {
@@ -391,7 +391,7 @@ export class DeployView extends ReactView {
             const definition: FabricSmartContractDefinition = new FabricSmartContractDefinition(definitionName, definitionVersion, sequenceNumber);
 
             if (collectionConfigString && collectionConfigString !== '') {
-                const collectionFile: FabricCollectionDefinition[] = JSON.parse(collectionConfigString);
+                const collectionFile: FabricCollectionDefinition[] = JSON.parse(collectionConfigString) as FabricCollectionDefinition[];
                 definition.collectionConfig = collectionFile;
             }
 
